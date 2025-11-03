@@ -1,3 +1,68 @@
+<!-- ////////////////////////////  README MAIS ATUAL /////////////////// -->
+
+Este é um excelente script para automatizar a criação de usuários.
+
+Abaixo está uma descrição formatada e atualizada, pronta para ser inserida em seu arquivo `README.md`, com uma linguagem mais **formal** e **profissional**.
+
+-----
+
+# 👤 Gerenciamento de Usuários de Acesso Temporário (Convidados)
+
+Este script Bash é responsável por provisionar **contas de usuários convidados** com configurações padronizadas de forma automatizada no sistema. Ele utiliza métodos modernos de criptografia de senhas (SHA-512) e garante que os usuários sejam forçados a atualizar suas credenciais no primeiro login.
+
+## 🚀 Script de Provisionamento de Usuários
+
+### Descrição da Execução
+
+O script realiza as seguintes ações em sequência:
+
+1.  **Criação das Contas:** Quatro contas de usuário temporárias (`guest20` a `guest23`) são criadas.
+2.  **Configuração Padronizada:** Cada usuário é configurado com:
+      * **Comentário (`-c`):** "Usuário convidado".
+      * **Shell de Login (`-s`):** `/bin/bash` (fornecendo acesso completo ao shell).
+      * **Diretório Home (`-m`):** Cria um diretório home dedicado (`/home/guestXX`).
+      * **Senha Criptografada (`-p`):** A senha inicial (`Senha123`) é definida usando o algoritmo de hash **SHA-512** (opção `-6` do `openssl passwd`) para garantir a segurança da credencial armazenada.
+3.  **Expiração Forçada da Senha (`passwd -e`):** Imediatamente após a criação, a senha de cada usuário é **marcada como expirada**. Isso **força o usuário a alterar a senha** no primeiro acesso ao sistema, aumentando a segurança e aderindo às melhores práticas de gerenciamento de identidade.
+
+### Código (`script_criacao_convidados.sh`)
+
+```bash
+#!/bin/bash
+# Este script deve ser executado com privilégios de root (sudo)
+
+echo "Iniciando o provisionamento de Contas de Acesso Temporário..."
+
+# A senha inicial "Senha123" será criptografada usando SHA-512 (-6)
+PASSWORD_HASH=$(openssl passwd -6 Senha123)
+COMMENT="Usuário convidado"
+SHELL_DEFAULT="/bin/bash"
+
+# Lista de usuários a serem criados
+USERS=("guest20" "guest21" "guest22" "guest23")
+
+for USER in "${USERS[@]}"; do
+    echo " -> Criando e configurando o usuário: ${USER}"
+    
+    # Cria o usuário, define o shell, cria o home dir e define a senha
+    useradd "${USER}" -c "${COMMENT}" -s "${SHELL_DEFAULT}" -m -p "${PASSWORD_HASH}"
+    
+    # Força a expiração da senha para que o usuário precise alterá-la no primeiro login
+    passwd "${USER}" -e
+done
+
+echo "✅ Provisionamento de todos os usuários concluído com sucesso."
+```
+
+### 💡 **Melhoria e Boas Práticas (Recomendação)**
+
+Para ambientes de produção, é altamente recomendável utilizar **variáveis** (como no código revisado acima) para a senha e comentários, e utilizar um *loop* (como o que adicionei na sugestão de código) para evitar a repetição de código e facilitar a manutenção e escalabilidade.
+
+-----
+
+Qual parte desta descrição você gostaria de expandir ou detalhar mais no seu README?
+
+<!-- ///////////////////////////////////////////////////// FIM DO README MAIS ATUAL ////////////////////////////////////////////////////////// -->
+
 
 Aqui estão os passos exatos para executar o *script* no seu servidor:
 
@@ -154,3 +219,4 @@ echo "=========================================="
 **Com este *script*, todos os usuários `guest10` a `guest13` serão criados e automaticamente adicionados ao grupo secundário `convidados`.**
 
 Gostaria de ajuda para executar esse *script* ou para configurar permissões para o novo grupo `convidados` em algum diretório específico?
+
